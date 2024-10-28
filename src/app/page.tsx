@@ -27,10 +27,11 @@ export default function Home() {
   // Busca as tarefas no banco de dados via API
   async function readTasks() {
     const response = await api.get("/tasks")
+    console.log(response.data)
     setTasks(response.data)
   }
 
-  // Cria uma nova tarefa via API
+  // Cria uma nova tarefa
   async function createTask(event: FormEvent) {
     event.preventDefault()
     const response = await api.post("/tasks", {
@@ -54,10 +55,7 @@ export default function Home() {
 
   async function setTaskDone(id:string) {
     try {
-      await api.put("/tasks", {
-        params: {
-          id: id
-        },
+      await api.put("/tasks/" + id, {
         status: true,
       })
       const response = await api.get("/tasks")
@@ -89,12 +87,13 @@ export default function Home() {
         <section className="mt-5 flex flex-col">
 
           {tasks.map((task) => (
-            <article className="w-full bg-slate-200 text-slate-800 p-2 rounded relative hover:bg-sky-300" key={task.id}>
+            <article className="w-full bg-slate-200 text-slate-800 p-2 mb-4 rounded relative hover:bg-sky-300" key={task.id}>
               <p>{task.description}</p>
-              <p>{task.date}</p>
-              <p>{task.status}</p>
+              <p>{new Date(task.date_task).toLocaleDateString()}</p>
+              <p>{task.status.toString()}</p>
 
-              <button className="flex absolute right-14 -top-2 bg-green-600 w-7 h-7 items-center justify-center text-slate-200" onClick={() => setTaskDone(task.id)}><FiCheck></FiCheck></button>
+
+              <button className="flex absolute right-10 -top-2 bg-green-600 w-7 h-7 items-center justify-center text-slate-200" onClick={() => setTaskDone(task.id)}><FiCheck></FiCheck></button>
 
               <button className="flex absolute right-0 -top-2 bg-red-600 w-7 h-7 items-center justify-center text-slate-200" onClick={() => deleteTask(task.id)}><FiTrash></FiTrash></button>
             </article>
