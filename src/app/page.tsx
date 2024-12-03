@@ -3,63 +3,71 @@ import { useEffect, useState, useRef, FormEvent } from "react";
 import { FiTrash, FiEdit, FiCheck } from "react-icons/fi"
 import { api } from "./api";
 
-interface TaskProps {
+interface PerfilProps {
   id: string;
-  description: string;
-  date: string;
-  status: boolean;
+  descricao: string;
+  criar_usuario: boolean;
+  editar_usuario: boolean;
+  excluir_usuario: boolean;
+  ler_usuario: boolean;
 }
 
-export default function Home() {
+export default function Perfil() {
 
   // Linkar os inputs
-  const descriptionRef = useRef<HTMLInputElement | null>(null)
-  const dateRef = useRef<HTMLInputElement | null>(null)
+  const descricaoRef = useRef<HTMLInputElement | null>(null)
+  const criar_usuarioRef = useRef<HTMLInputElement | null>(null)
+  const editar_usuarioRef = useRef<HTMLInputElement | null>(null)
+  const excluir_usuarioRef = useRef<HTMLInputElement | null>(null)
+  const ler_usuarioRef = useRef<HTMLInputElement | null>(null)
 
   // Inicializa lista de tarefas da página como lista vazia
-  const [tasks, setTasks] = useState<TaskProps[]>([])
+  const [perfis, setPerfil] = useState<PerfilProps[]>([])
 
   // Ao renderizar a página, chama a função "readTasks"
   useEffect(() => {
-    readTasks();
+    readPerfil();
   }, [])
 
   // Busca as tarefas no banco de dados via API
-  async function readTasks() {
-    const response = await api.get("/tasks")
+  async function readPerfil() {
+    const response = await api.get("/perfis")
     console.log(response.data)
-    setTasks(response.data)
+    setPerfil(response.data)
   }
 
   // Cria uma nova tarefa
-  async function createTask(event: FormEvent) {
+  async function createPerfil(event: FormEvent) {
     event.preventDefault()
-    const response = await api.post("/tasks", {
-      description: descriptionRef.current?.value,
-      date: dateRef.current?.value
+    const response = await api.post("/perfis", {
+      descricao: descricaoRef.current?.value,
+      criar_usuario: criar_usuarioRef,
+      editar_usuario: editar_usuarioRef,
+      excluir_usuario: excluir_usuarioRef,
+      ler_usuario: ler_usuarioRef
     }) 
-    setTasks(allTasks => [...allTasks, response.data])
+    setPerfil(allPerfil => [...allPerfil, response.data])
   }
 
   // Deleta uma tarefa
-  async function deleteTask(id: string){
+  async function deletePerfil(id: string){
     try{
-      await api.delete("/tasks/" + id)
-      const allTasks = tasks.filter((task) => task.id !== id)
-      setTasks(allTasks)
+      await api.delete("/perfis/" + id)
+      const allPerfil = perfis.filter((perfil) => perfil.id !== id)
+      setPerfil(allPerfil)
     }
     catch(err){
       alert(err)
     }
   }
 
-  async function setTaskDone(id:string) {
+  async function setPerfilDone(id:string) {
     try {
-      await api.put("/tasks/" + id, {
+      await api.put("/perfis/" + id, {
         status: true,
       })
-      const response = await api.get("/tasks")
-      setTasks(response.data)
+      const response = await api.get("/perfis")
+      setPerfil(response.data)
     }
     catch(err){
       alert(err)
@@ -72,30 +80,28 @@ export default function Home() {
         <section>
           <h1 className="text-4xl text-slate-200 font-medium text-center">To Do List</h1>
 
-          <form className="flex flex-col my-6" onSubmit={createTask}>
+          <form className="flex flex-col my-6" onSubmit={createPerfil}>
           
-            <label className="text-slate-200">Task Description</label>
-            <input type="text" className="w-full mb-5 p-2 rounded" ref={descriptionRef}/>
-
-            <label className="text-slate-200">Date</label>
-            <input type="date" className="w-full mb-5 p-2 rounded" ref={dateRef} />
-
+            <label className="text-slate-200">Descrição do Perfil</label>
+            <input type="text" className="w-full mb-5 p-2 rounded" ref={descricaoRef}/>
+            
             <input type="submit" value={"Add Task"} className="cursor-pointer w-full bg-slate-800 rounded font-medium text-slate-200 p-4" />
           </form>
 
         </section>
         <section className="mt-5 flex flex-col">
 
-          {tasks.map((task) => (
-            <article className="w-full bg-slate-200 text-slate-800 p-2 mb-4 rounded relative hover:bg-sky-300" key={task.id}>
-              <p>{task.description}</p>
-              <p>{new Date(task.date_task).toLocaleDateString()}</p>
-              <p>{task.status.toString()}</p>
+          {perfis.map((perfil) => (
+            <article className="w-full bg-slate-200 text-slate-800 p-2 mb-4 rounded relative hover:bg-sky-300" key={perfil.id}>
+              <p>{perfil.descricao}</p>
+              <p>{perfil.criar_usuario.toString()}</p>
+              <p>{perfil.editar_usuario.toString()}</p>
+              <p>{perfil.excluir_usuario.toString()}</p>
+              <p>{perfil.ler_usuario.toString()}</p>
 
+              <button className="flex absolute right-10 -top-2 bg-green-600 w-7 h-7 items-center justify-center text-slate-200" onClick={() => setPerfilDone(perfil.id)}><FiCheck></FiCheck></button>
 
-              <button className="flex absolute right-10 -top-2 bg-green-600 w-7 h-7 items-center justify-center text-slate-200" onClick={() => setTaskDone(task.id)}><FiCheck></FiCheck></button>
-
-              <button className="flex absolute right-0 -top-2 bg-red-600 w-7 h-7 items-center justify-center text-slate-200" onClick={() => deleteTask(task.id)}><FiTrash></FiTrash></button>
+              <button className="flex absolute right-0 -top-2 bg-red-600 w-7 h-7 items-center justify-center text-slate-200" onClick={() => deletePerfil(perfil.id)}><FiTrash></FiTrash></button>
             </article>
           ))}
         </section>
