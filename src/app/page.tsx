@@ -31,9 +31,16 @@ export default function Perfil() {
 
   // Busca as tarefas no banco de dados via API
   async function readPerfil() {
+    try{
     const response = await api.get("/perfis")
     console.log(response.data)
-    setPerfil(response.data)
+    setPerfil(Array.isArray(response.data) ? response.data : [])
+    }
+    catch(error){
+      console.error("Error fetching tasks:", error);
+      setPerfil([])
+
+    }
   }
 
   // Cria uma nova tarefa
@@ -78,7 +85,7 @@ export default function Perfil() {
     <div className="w-full min-h-screen bg-slate-500 flex justify-center px-4">
       <main className="my-10 w-full lg:max-w-5xl">
         <section>
-          <h1 className="text-4xl text-slate-200 font-medium text-center">To Do List</h1>
+          <h1 className="text-4xl text-slate-200 font-medium text-center">Perfis</h1>
 
           <form className="flex flex-col my-6" onSubmit={createPerfil}>
           
@@ -91,7 +98,8 @@ export default function Perfil() {
         </section>
         <section className="mt-5 flex flex-col">
 
-          {perfis.map((perfil) => (
+          {perfis.length > 0 ? (
+          perfis.map((perfil) => (
             <article className="w-full bg-slate-200 text-slate-800 p-2 mb-4 rounded relative hover:bg-sky-300" key={perfil.id}>
               <p>{perfil.descricao}</p>
               <p>{perfil.criar_usuario.toString()}</p>
@@ -103,7 +111,10 @@ export default function Perfil() {
 
               <button className="flex absolute right-0 -top-2 bg-red-600 w-7 h-7 items-center justify-center text-slate-200" onClick={() => deletePerfil(perfil.id)}><FiTrash></FiTrash></button>
             </article>
-          ))}
+          ))
+        ) : (
+             <p className="text-center text-gray-500">No tasks available</p>
+        )}
         </section>
       </main>
     </div>
