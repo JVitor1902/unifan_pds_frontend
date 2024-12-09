@@ -92,7 +92,7 @@ export default function Perfil() {
             <label className="text-slate-200">Descrição do Perfil</label>
             <input type="text" className="w-full mb-5 p-2 rounded" ref={descricaoRef}/>
             
-            <input type="submit" value={"Add Task"} className="cursor-pointer w-full bg-slate-800 rounded font-medium text-slate-200 p-4" />
+            <input type="submit" value={"Adicionar Perfil"} className="cursor-pointer w-full bg-slate-800 rounded font-medium text-slate-200 p-4" /> 
           </form>
 
         </section>
@@ -113,7 +113,7 @@ export default function Perfil() {
             </article>
           ))
         ) : (
-             <p className="text-center text-gray-500">No tasks available</p>
+             <p className="text-center text-gray-500">No perfis available</p>
         )}
         </section>
       </main>
